@@ -1,3 +1,8 @@
+const supabaseURL = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+
+const supabase = supabase.createClient(supabaseURL, supabaseKey);
+
 window.addEventListener("DOMContentLoaded", main());
 
 function main() {
@@ -18,5 +23,4 @@ function checkPassword() {
       message.style.color = "red";
     }
   });
-  console.log(password.value);
 }
