@@ -36,3 +36,25 @@ function checkForm() {
     submitBtn.disabled = true;
   }
 }
+
+document
+  .getElementById("signup_form")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const fullName = document.getElementById("fullName").value;
+    const email = document.getElementById("email").value;
+    const confirmPassword = document.getElementById("confirm-password");
+
+    console.log("Before fetch");
+
+    const response = await fetch("http://127.0.0.1:5000/signup", {
+      // this is just the temp ip
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fullName, email, confirmPassword }),
+    });
+
+    const res = await response.json();
+    console.log(res);
+    alert("Success");
+  });
