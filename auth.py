@@ -24,21 +24,22 @@ def signup():
     try:
         data = request.json
         email = data.get("email")
-        password = data.get("confirmPassword")
-        fullName = data.get("fullName")
+        password = data.get("confirmPassword")  # Ensure field name matches frontend
 
-        print(data)
-        print(email)
-        print(password)
+        if not email or not password:
+            return jsonify({"error": "Email and password are required"}), 400
 
         response = supabase.auth.sign_up({"email": email, "password": password})
 
-        print(response)
+        if response.user is None:
+            return jsonify({"error": response.error.message}), 400
 
-        if "error" in response:
-            return jsonify({"error": response["error"]}), 400
+        user_data = {
+            "id": response.user.id,
+            "email": response.user.email
+        }
 
-        return jsonify({"message": "Signup successful!", "user": response["user"]}), 200
+        return jsonify({"message": "Signup successful!", "user": user_data}), 200
 
     except Exception as e:
         print(f"Signup error: {e}")
