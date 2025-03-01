@@ -46,6 +46,33 @@ def signup():
         return jsonify({"error": "Internal Server Error"}), 500
 
 
+@auth_bp.route("/signin", methods=["POST"])
+def signIn():
+    try:
+        data = request.json
+        email = data.get("email")
+        password = data.get("password")
+
+        if not email or not password:
+            return jsonify({"error": "Email and password are required"}), 400
+
+        response = supabase.auth.sign_in_with_password({"email": email, "password": password})
+
+        if response.user is None:
+            return jsonify({"error": response.error.message}), 400
+
+        user_data = {
+            "id": response.user.id,
+            "email": response.user.email,
+            "access_token": response.session.access_token
+        }
+
+        return jsonify({"message": "Signin successful!", "user": user_data}), 200
+    except Exception as e:
+        print(f"Signin error: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
 
 
 
