@@ -21,10 +21,33 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @auth_bp.route("/signup", methods=["POST"])
 def signup():
-    data = request.json
-    print("Sucess to backend")
-    print("Data" + data.get("email"))
-    return jsonify({"message": "Signup successful!"})
+    try:
+        data = request.json
+        email = data.get("email")
+        password = data.get("confirmPassword")
+        fullName = data.get("fullName")
+
+        print(data)
+        print(email)
+        print(password)
+
+        response = supabase.auth.sign_up({"email": email, "password": password})
+
+        print(response)
+
+        if "error" in response:
+            return jsonify({"error": response["error"]}), 400
+
+        return jsonify({"message": "Signup successful!", "user": response["user"]}), 200
+
+    except Exception as e:
+        print(f"Signup error: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+
+
+
+
 
 
 
