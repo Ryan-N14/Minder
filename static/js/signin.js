@@ -24,7 +24,7 @@ async function signIn() {
 
   const data = response.json();
 
-  // Checking if sign up is successful
+  // Checking if sign in is successful
   if (response.ok) {
     alert("Successful Sign in");
   } else {

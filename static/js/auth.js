@@ -65,3 +65,4 @@ async function signUp() {
     alert("Failed to Sign Up");
   }
 }
+
