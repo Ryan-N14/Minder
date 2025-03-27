@@ -48,7 +48,6 @@ async function fetchMovies() {
 // Display current movie
 function showMovie() {
   if (currentMovieIndex >= movies.length) {
-    alert("You've rated all available movies!");
     window.location.href = "/home.html"; // Redirect after finishing
     return;
   }
