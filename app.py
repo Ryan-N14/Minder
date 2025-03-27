@@ -6,7 +6,25 @@ import random
 
 
 app = Flask(__name__)
-CORS(app);
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "http://127.0.0.1:5500", 
+            "http://localhost:5500",
+            "http://127.0.0.1:5500/templates/suggestion.html"
+        ],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
+
+# Add this method to handle OPTIONS requests
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'http://127.0.0.1:5500')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
 # Loading IMDB clean dataset 
 with open ("Minder.json", "r", encoding="utf-8") as file:
