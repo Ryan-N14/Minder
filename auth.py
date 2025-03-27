@@ -8,8 +8,10 @@ import os
 from dotenv import load_dotenv
 from flask import Blueprint, request, jsonify
 from supabase import create_client, Client
+from flask_cors import CORS
 
 auth_bp = Blueprint("auth", __name__)
+CORS(auth_bp)
 
 load_dotenv()
 
