@@ -56,13 +56,14 @@ async function signUp() {
     body: JSON.stringify({ email, confirmPassword }),
   }); // end of call
 
-  const data = response.json();
+  const data = await response.json();
 
   // Checking if sign up is successful
   if (response.ok) {
-    alert("Successful Sign Up");
+    localStorage.setItem("user_id", data.user.id);
+    console.log("Sucess sign-up!");
+    //window.location.href = "/templates/suggestion.html";
   } else {
     alert("Failed to Sign Up");
   }
 }
-

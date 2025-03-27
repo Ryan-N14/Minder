@@ -1,0 +1,370 @@
+body {
+  font-family: "Arial", sans-serif;
+  margin: 0;
+  background: linear-gradient(
+    to bottom right,
+    #4a148c,
+    #7b1fa2,
+    #9c27b0,
+    #ab47bc
+  );
+  color: white;
+  min-height: 100vh;
+}
+
+/*
+.sidebar {
+  width: 200px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  position: fixed;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.sidebar h2 {
+  margin: 0 0 20px;
+  font-size: 1.8em;
+  text-align: center;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin: 15px 0;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2em;
+  display: block;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: #ff4081;
+} */
+
+/*
+.content {
+  margin-left: 220px; 
+  padding: 2rem;
+  flex: 1;
+}*.
+
+/*
+
+h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+button,
+#searchBtn,
+#editProfile {
+  background: #ff4081;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover,
+#searchBtn:hover,
+#editProfile:hover {
+  background: #f50057;
+}
+
+#suggestedMovies,
+#myList,
+#searchResults {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.movie-item,
+.list-item {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 15px;
+  border-radius: 8px;
+  width: 200px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.add-btn,
+.delete-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.delete-btn {
+  background: #f44336;
+}
+
+.add-btn:hover {
+  background: #45a049;
+}
+
+.delete-btn:hover {
+  background: #d32f2f;
+}
+
+#searchInput {
+  padding: 10px;
+  width: 300px;
+  border-radius: 5px;
+  border: none;
+  margin-right: 10px;
+}
+
+#profileInfo {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+}
+*/
+/* Add this to the existing style.css */
+/*.hidden {
+  display: none;
+}
+
+#editForm {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  margin-top: 20px;
+}
+
+#editForm label {
+  display: block;
+  margin: 10px 0 5px;
+  font-size: 1.1em;
+}
+
+#editForm input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  margin-bottom: 15px;
+}
+
+#editForm button {
+  margin-right: 10px;
+}
+
+#cancelEdit {
+  background: #f44336;
+}
+
+#cancelEdit:hover {
+  background: #d32f2f;
+}*/
+/* Add to the end of style.css 
+.suggestion-item {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 15px;
+  border-radius: 8px;
+  width: 250px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.yes-btn,
+.no-btn {
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.yes-btn {
+  background: #4caf50;
+  color: white;
+}
+
+.yes-btn:hover,
+.yes-btn:disabled {
+  background: #45a049;
+}
+
+.no-btn {
+  background: #f44336;
+  color: white;
+}
+
+.no-btn:hover,
+.no-btn:disabled {
+  background: #d32f2f;
+}
+
+#suggestionContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.container {
+  text-align: center;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+#movie-container img {
+  width: 200px;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.buttons button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#yes-btn {
+  background-color: green;
+  color: white;
+}
+
+#no-btn {
+  background-color: red;
+  color: white;
+}
+*/
+
+.content {
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.movie_header {
+  text-align: center;
+}
+
+.buttonsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+}
+
+#suggestionContainer {
+  width: 30vw;
+  height: 30vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+
+  padding: 15px;
+  border-radius: 15px;
+  background-color: #feffff;
+  color: black;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+#yes-btn,
+#no-btn {
+  width: 120px;
+  height: 40px;
+  border-radius: 10px;
+
+  border: none;
+  color: white;
+  transition: 2ms ease-in-out;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+#yes-btn {
+  background-color: #4bb748;
+}
+
+#no-btn {
+  background-color: #ee4548;
+}
+
+#yes-btn:hover,
+#no-btn:hover {
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+#movieContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+#movie-title {
+  text-align: center;
+  margin: 0;
+}
+
+.movie_info {
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+  justify-content: center;
+}
+
+/* movie information styles */
+
+#movie-rating {
+  padding: 6px;
+}
+
+.genreYear {
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+  margin: 0;
+  padding: 0;
+}
+
+.test {
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+  justify-content: center;
+}
