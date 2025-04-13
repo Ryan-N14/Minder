@@ -4,14 +4,13 @@
 # Created by Ryan Nguyen Feb 23 2024
 #
 
+
 import os
 from dotenv import load_dotenv
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from supabase import create_client, Client
-from flask_cors import CORS
 
 auth_bp = Blueprint("auth", __name__)
-CORS(auth_bp)
 
 load_dotenv()
 
@@ -21,12 +20,17 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-@auth_bp.route("/signup", methods=["POST"])
+
+# this route signup the user and creates a session for that user.
+@auth_bp.route("/signup", methods=["POST", "OPTIONS"])
 def signup():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "CORS preflight OK"}), 200
+
     try:
         data = request.json
         email = data.get("email")
-        password = data.get("confirmPassword")  # Ensure field name matches frontend
+        password = data.get("password")  # Ensure field name matches frontend
 
         if not email or not password:
             return jsonify({"error": "Email and password are required"}), 400
@@ -36,43 +40,104 @@ def signup():
         if response.user is None:
             return jsonify({"error": response.error.message}), 400
 
-        user_data = {
-            "id": response.user.id,
-            "email": response.user.email
-        }
+        user = response.user.id
 
-        return jsonify({"message": "Signup successful!", "user": user_data}), 200
-
+        if user:
+            session["user_id"] = user # grabbing user ID to save
+            return jsonify({'redirect': '/templates/suggestion.html'}), 200
+        return jsonify({'error': 'Signup failed'}), 400
     except Exception as e:
         print(f"Signup error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
 
-@auth_bp.route("/signin", methods=["POST"])
-def signIn():
+# this route login users
+@auth_bp.route("/login", methods=["POST", "OPTIONS"])
+def login():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if request.method == "OPTIONS":
+        return jsonify({"status": "CORS preflight OK"}), 200
+
+    #login user in using suopabase
     try:
-        data = request.json
-        email = data.get("email")
-        password = data.get("password")
+        res = supabase.auth.sign_in_with_password({
+            "email": email,
+            "password": password,
+        })
 
-        if not email or not password:
-            return jsonify({"error": "Email and password are required"}), 400
+        user = res.user.id
 
-        response = supabase.auth.sign_in_with_password({"email": email, "password": password})
-
-        if response.user is None:
-            return jsonify({"error": response.error.message}), 400
-
-        user_data = {
-            "id": response.user.id,
-            "email": response.user.email,
-            "access_token": response.session.access_token
-        }
-
-        return jsonify({"message": "Signin successful!", "user": user_data}), 200
+        #Check if user exist, after creates a session
+        if user:
+            session["user_id"] = user
+            return jsonify({
+                'message': 'Login successful',
+                'user_email': res.user.email,  # ✅ Renamed to avoid triggering user-object serialization
+                'redirect': '/templates/suggestion.html'
+            }), 200
+        else:
+            return jsonify({'error': 'Invalid login'}), 401
     except Exception as e:
-        print(f"Signin error: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
+        return jsonify({'error': str(e)}), 401
+
+
+
+
+@auth_bp.route('/savefeedback', methods=["POST", "OPTIONS"])
+def save_feedback():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "CORS preflight OK"}), 200
+    
+
+
+    #grabbing user ID
+    user_id = session["user_id"]
+    if not user_id:
+        print("❌ No user ID found in session")
+        return jsonify({"error": "User not in session"}), 401
+
+
+    #grabbing feedback data
+    feedback = request.json.get("feedback", [])
+    print("📥 Feedback received:", feedback)
+
+    try:
+        entries = []
+
+        for items in feedback:
+            entries.append ({
+                "user_id": user_id,
+                "movie_id": items["movie_id"],
+                "liked": items["liked"] 
+            })
+
+        print("📦 Supabase entries to insert:", entries)
+        
+        response = supabase.table("user_inputs").insert(entries).execute()
+        print("🟢 Supabase response:", response)
+
+        if hasattr(response, "status_code") and response.status_code >= 400:
+            return jsonify({
+                "error": "Insert failed",
+                "details": str(response)
+            }), 500
+
+        if not response.data or len(response.data) != len(entries):
+            return jsonify({
+                "error": "Unexpected insert result",
+                "details": str(response.data)
+            }), 500
+
+
+
+        return jsonify({"redirect": "/home"}), 200
+        
+
+    except Exception as e:
+        return jsonify({"error" : str(e)}), 500
 
 
 
