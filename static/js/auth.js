@@ -1,18 +1,82 @@
-window.addEventListener("DOMContentLoaded", main());
+window.addEventListener("DOMContentLoaded", main);
 
 function main() {
-  checkPassword();
-  document.getElementById("fullName").addEventListener("input", checkForm);
-  document.getElementById("email").addEventListener("input", checkForm);
+  const loginBtn = document.getElementById("loginbtn");
+  const signupBtn = document.getElementById("signupBtn");
 
-  document
-    .getElementById("signup_form")
-    .addEventListener("submit", function (event) {
+  if (loginBtn) {
+    loginBtn.addEventListener("click", function (event) {
       event.preventDefault();
-      signUp();
+      login();
     });
+  }
+
+  if (signupBtn) {
+    signupBtn.addEventListener("click", function (event) {
+      event.preventDefault();
+      signup();
+    });
+  }
 }
 
+/**
+ * Async function to sign up new users, calls end point and backend
+ */
+
+async function signup() {
+  // Email and password from frontend
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  // Calling end point
+  const response = await fetch("http://127.0.0.1:5000/auth/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    mode: "cors",
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  });
+
+  const res = await response.json();
+
+  if (res.redirect) {
+    console.log("Sucess" + res.redirect);
+    window.location.href = res.redirect;
+  } else {
+    alert("signup unsucessful...");
+  }
+}
+
+/**
+ * Async function to login
+ */
+
+async function login() {
+  // Email and password from frontend
+  const email = document.getElementById("signin_email").value;
+  const password = document.getElementById("signin_password").value;
+
+  // calling end point
+  const response = await fetch("http://127.0.0.1:5000/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    mode: "cors",
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  });
+
+  // this section still needs to be coded but will do that later after finishing up the sign up portion
+  const res = await response.json();
+  console.log(res);
+}
+
+/*
 function checkPassword() {
   var password = document.getElementById("password");
   var confirmPassword = document.getElementById("confirm-password");
@@ -43,27 +107,16 @@ function checkForm() {
   }
 }
 
-async function signUp() {
-  console.log("Inside of sign up function");
-  // grabs the email and password from HTML
-  const email = document.getElementById("email").value;
-  const confirmPassword = document.getElementById("confirm-password").value;
+/*
+function main() {
+  checkPassword();
+  document.getElementById("fullName").addEventListener("input", checkForm);
+  document.getElementById("email").addEventListener("input", checkForm);
 
-  // calling end point to communicate with backend (POST)
-  const response = await fetch("http://127.0.0.1:5000/auth/signup", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, confirmPassword }),
-  }); // end of call
-
-  const data = await response.json();
-
-  // Checking if sign up is successful
-  if (response.ok) {
-    localStorage.setItem("user_id", data.user.id);
-    console.log("Sucess sign-up!");
-    //window.location.href = "/templates/suggestion.html";
-  } else {
-    alert("Failed to Sign Up");
-  }
-}
+  document
+    .getElementById("signup_form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+      signUp();
+    });
+}*/
