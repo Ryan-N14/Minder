@@ -54,12 +54,14 @@ def signup():
 # this route login users
 @auth_bp.route("/login", methods=["POST", "OPTIONS"])
 def login():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "CORS preflight OK"}), 200
+
+    
     data = request.json
     email = data.get('email')
     password = data.get('password')
 
-    if request.method == "OPTIONS":
-        return jsonify({"status": "CORS preflight OK"}), 200
 
     #login user in using suopabase
     try:
@@ -70,13 +72,15 @@ def login():
 
         user = res.user.id
 
+        print("User", user)
+
         #Check if user exist, after creates a session
         if user:
             session["user_id"] = user
             return jsonify({
                 'message': 'Login successful',
                 'user_email': res.user.email,  # ✅ Renamed to avoid triggering user-object serialization
-                'redirect': '/templates/suggestion.html'
+                'redirect': '/templates/home.html'
             }), 200
         else:
             return jsonify({'error': 'Invalid login'}), 401
@@ -133,7 +137,7 @@ def save_feedback():
 
 
 
-        return jsonify({"redirect": "/home"}), 200
+        return jsonify({"redirect": "/templates/home.html"}), 200
         
 
     except Exception as e:

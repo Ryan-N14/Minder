@@ -74,6 +74,12 @@ async function login() {
   // this section still needs to be coded but will do that later after finishing up the sign up portion
   const res = await response.json();
   console.log(res);
+
+  if (res.redirect) {
+    window.location.href = res.redirect;
+  } else {
+    alert("check login credentials");
+  }
 }
 
 /*
