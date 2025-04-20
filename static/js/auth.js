@@ -3,6 +3,9 @@ window.addEventListener("DOMContentLoaded", main);
 function main() {
   const loginBtn = document.getElementById("loginbtn");
   const signupBtn = document.getElementById("signupBtn");
+  document.getElementById("email").addEventListener("input", checkForm);
+
+  checkPassword();
 
   if (loginBtn) {
     loginBtn.addEventListener("click", function (event) {
@@ -82,7 +85,6 @@ async function login() {
   }
 }
 
-/*
 function checkPassword() {
   var password = document.getElementById("password");
   var confirmPassword = document.getElementById("confirm-password");
@@ -104,12 +106,12 @@ function checkPassword() {
 function checkForm() {
   var fullName = document.getElementById("fullName");
   var email = document.getElementById("email");
-  var submitBtn = document.getElementById("submitBTN");
+  var signupBtn = document.getElementById("signupBtn");
 
   if (fullName.value && email.value) {
-    submitBtn.disabled = false;
+    signupBtn.disabled = false;
   } else {
-    submitBtn.disabled = true;
+    signupBtn.disabled = true;
   }
 }
 

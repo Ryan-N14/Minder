@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Explore - Minder</title>
+    <title>My List - Minder</title>
     <link rel="stylesheet" href="/static/css/home.css">
-    <script src="script.js" defer></script>
+    <script src="mylist.js" defer></script>
 </head>
 <body>
     <nav class="sidebar">
     <h2>Minder</h2>
     <ul>
-   		<li><a href="suggestions.html" class="{{active_suggestions}}">Suggestions</a></li>
+      <li><a href="suggestions.html" class="{{active_suggestions}}">Suggestions</a></li>
         <li><a href="home.html" class="{{active_explore}}">Explore</a></li>
         <li><a href="mylist.html" class="{{active_mylist}}">My List</a></li>
         <li><a href="search.html" class="{{active_search}}">Search</a></li>
@@ -18,9 +18,8 @@
     </ul>
 </nav>
     <div class="content">
-        <h1>Explore Movies</h1>
-        <p>Discover suggested movies:</p>
-        <div id="suggestedMovies"></div>
+        <h1>My Movie List</h1>
+        <div id="myList"></div>
     </div>
 </body>
 </html>
