@@ -14,7 +14,7 @@ body {
 }
 
 .sidebar {
-  width: 200px;
+  width: 13%;
   background: rgba(0, 0, 0, 0.8);
   padding: 20px;
   position: fixed;
@@ -53,7 +53,7 @@ body {
 }
 
 .content {
-  margin-left: 220px; /* Space for sidebar */
+  margin-left: 237px; /* Space for sidebar */
   padding: 2rem;
   flex: 1;
 }
@@ -156,7 +156,7 @@ button:hover,
   padding: 20px;
   border-radius: 8px;
   max-width: 400px;
-  margin-top: 20px;
+  margin: 20px;
 }
 
 #editForm label {
@@ -231,4 +231,68 @@ button:hover,
   flex-wrap: wrap;
   gap: 15px;
   justify-content: center;
+}
+
+.profile-container {
+  background-color: white;
+  height: 93%;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.profile-card {
+  border: 2px solid rgba(10, 10, 10, 0.3);
+  border-radius: 20px;
+  margin: 20px;
+  height: 20%;
+
+  position: relative;
+
+  padding: 10px;
+}
+
+.test {
+  height: 90%;
+}
+
+.profile-btn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+}
+
+.profile-edit {
+  border: 2px solid rgba(10, 10, 10, 0.3);
+
+  background-color: white;
+  color: black;
+
+  border-radius: 15px;
+}
+
+.profile-header {
+  color: black;
+  position: absolute;
+  top: 2px;
+  left: 20px;
+}
+
+.information-container {
+  color: rgba(10, 10, 10, 0.6);
+  display: flex;
+  flex-direction: row;
+  gap: 400px;
+
+  position: absolute;
+  top: 60px;
+  left: 20px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.info > p {
+  margin: 5px;
 }

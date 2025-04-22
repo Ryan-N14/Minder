@@ -4,34 +4,48 @@
     <meta charset="UTF-8">
     <title>Profile - Minder</title>
     <link rel="stylesheet" href="/static/css/home.css">
-    <script src="profile.js" defer></script>
+    <script src="/static/js/profile.js" defer></script>
 </head>
 <body>
    <nav class="sidebar">
-    <h2>Minder</h2>
-    <ul>
-        <li><a href="suggestions.html" class="{{active_suggestions}}">Suggestions</a></li>
-        <li><a href="home.html" class="{{active_explore}}">Explore</a></li>
-        <li><a href="mylist.html" class="{{active_mylist}}">My List</a></li>
-        <li><a href="search.html" class="{{active_search}}">Search</a></li>
-        <li><a href="profile.html" class="{{active_profile}}">Profile</a></li>
-    </ul>
-</nav>
+        <h2>Minder</h2>
+        <ul>
+            <li><a href="suggestions.html" class="{{active_suggestions}}">Suggestions</a></li>
+            <li><a href="home.html" class="{{active_explore}}">Explore</a></li>
+            <li><a href="mylist.html" class="{{active_mylist}}">My List</a></li>
+            <li><a href="search.html" class="{{active_search}}">Search</a></li>
+            <li><a href="profile.html" class="{{active_profile}}">Profile</a></li>
+        </ul>
+    </nav>
+
     <div class="content">
-        <h1>Your Profile</h1>
-        <div id="profileInfo">
-            <p>Name: <span id="userName">Guest</span></p>
-            <p>Favorite Genre: <span id="favoriteGenre">Not set</span></p>
-            <button id="editProfile">Edit Profile</button>
+        <div class="test">
+            <h1>Edit Profile</h1>
+            <div class="profile-container">
+                <div class="profile-card">
+                    <h3 class="profile-header">Personal Info</h3>
+                    <div class="profile-btn">
+                        <button class="profile-edit">Edit</button>
+                    </div>
+
+                    <div class="information-container">
+                        <div class="info">
+                            <p>Email</p>
+                            <p id="email-info">nguyenryan142002@gmail.com</p>
+                            
+                        </div>
+                        <div class="info">
+                            <p>Password</p>
+                            <p id="password-info">23120490322</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
         </div>
-        <form id="editForm" class="hidden">
-            <label for="nameInput">Name:</label>
-            <input type="text" id="nameInput" placeholder="Enter your name">
-            <label for="genreInput">Favorite Genre:</label>
-            <input type="text" id="genreInput" placeholder="Enter your favorite genre">
-            <button type="submit" id="saveProfile">Save</button>
-            <button type="button" id="cancelEdit">Cancel</button>
-        </form>
     </div>
+
 </body>
 </html>
