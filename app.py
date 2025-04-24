@@ -56,7 +56,6 @@ def get_movies():
 
 
 
-
 app.register_blueprint(auth_bp, url_prefix="/auth")
 
 
