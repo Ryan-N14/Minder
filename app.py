@@ -1,13 +1,16 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 from auth import auth_bp
 from flask_cors import CORS
 import json
 import random
+from rec_system import MovieRecommender
 
 
 app = Flask(__name__)
 
 app.secret_key = "secretKey"
+
+recommender = MovieRecommender()
 
 
 # CORS configuration to allow a single origin
@@ -24,32 +27,10 @@ with open ("Minder.json", "r", encoding="utf-8") as file:
     movies = json.load(file)
 
 
-filtered_movies = [
-    {
-        "id": movie["tconst"],
-        "title": movie["primaryTitle"],
-        "year": int(movie["startYear"]) if movie["startYear"] else None,
-        "runtime": int(movie["runtimeMinutes"]) if movie["runtimeMinutes"] else None,
-        "rating": float(movie["averageRating"]) if movie["averageRating"] else None,
-        "votes": int(movie["numVotes"]) if movie["numVotes"] else 0,
-        "genres": movie["genres"].split(",") if movie["genres"] else [],
-        "poster_url": f"https://img.omdbapi.com/?i={movie['tconst']}&apikey=YOUR_OMDB_API_KEY"  # Optional poster
-    }
-    for movie in movies
-    if not movie["isAdult"] and movie["genres"]  # Exclude adult movies and empty genres
-]
-
+# Ideally this route is called after the user is logged in otherwise it will throw an error and not work
 @app.route("/get_movies", methods=["GET", "OPTIONS" ])
 def get_movies():
-    print(f"🎬 Reached /get_movies with method {request.method}")
-
-    if not filtered_movies or len(filtered_movies) < 1:
-        return jsonify({"error": "No movies available"}), 500
-
-    if request.method == "OPTIONS":
-        return jsonify({"status": "CORS preflight OK"}), 200
-    
-    selected_movies = random.sample(filtered_movies, 10)
+    selected_movies = recommender.get_next_batch(30)
     return jsonify(selected_movies)
 
 
