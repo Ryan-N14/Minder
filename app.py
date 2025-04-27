@@ -4,7 +4,7 @@ from flask_cors import CORS
 import os
 import json
 import random
-from rec_system import build_recommender_from_supabase
+from rec_system import build_recommender_from_supabase, get_user_preferences
 from supabase import create_client
 
 
@@ -63,12 +63,35 @@ def handle_exception(e):
 # Ideally this route is called after the user is logged in otherwise it will throw an error and not work
 @app.route("/get_movies", methods=["GET", "OPTIONS" ])
 def get_movies():
-    user_id = session("user_id")
+    if request.method == "OPTIONS":
+        # Handle CORS preflight request properly
+        response = jsonify({"status": "OK"})
+        response.status_code = 200
+        return response
+
+    user_id = session["user_id"]
+    if not user_id:
+        print("user not found")
+        return jsonify({"error: user not logged in"}), 401
 
     #Create recommender
     recommender = build_recommender_from_supabase(user_id, supabase)
-    batch = recommender.get_next_batch(30)
+    print("Building recommender")
+
+    # grabbing total liked to see if its a new user or already a member
+    liked_id, disliked_id = get_user_preferences(user_id, supabase)
+    total_swipes = len(liked_id) + len(disliked_id)
+
+    if(total_swipes < 10):
+        batch_size = 10
+    else:
+        batch_size = 30
+
+
+    batch = recommender.get_next_batch(batch_size)
     # Returning the batch of movies
+
+    print("Returning...")
     return jsonify(batch)
 
 
@@ -93,6 +116,7 @@ def feedback():
 
 
     return jsonify({"message" : "Feedback saved sucessfully"}), 200
+
 
 
 

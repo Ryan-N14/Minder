@@ -137,7 +137,7 @@ def save_feedback():
 
 
 
-        return jsonify({"redirect": "/templates/home.html"}), 200
+        return jsonify({"redirect": "/templates/explore.html"}), 200
         
 
     except Exception as e:

@@ -4,21 +4,58 @@
     <meta charset="UTF-8">
     <title>Explore - Minder</title>
     <link rel="stylesheet" href="/static/css/home.css">
-    <script src="script.js" defer></script>
+    <script src="/static/js/explore.js" defer></script>
 </head>
 <body>
     <nav class="sidebar">
-    <h2>Minder</h2>
-    <ul>
-        <li><a href="explore.html" class="{{active_explore}}">Explore</a></li>
-        <li><a href="mylist.html" class="{{active_mylist}}">My List</a></li>
-        <li><a href="search.html" class="{{active_search}}">Search</a></li>
-        <li><a href="profile.html" class="{{active_profile}}">Profile</a></li>
-    </ul>
-</nav>
+        <h2>Minder</h2>
+        <ul>
+            <li><a href="explore.html" class="{{active_explore}}">Explore</a></li>
+            <li><a href="mylist.html" class="{{active_mylist}}">My List</a></li>
+            <li><a href="search.html" class="{{active_search}}">Search</a></li>
+            <li><a href="profile.html" class="{{active_profile}}">Profile</a></li>
+        </ul>
+    </nav>
     <div class="content">
         <h1>Explore Movies</h1>
         <p>Discover suggested movies:</p>
+
+
+        <div id="loadingMessage" style="text-align: center; font-size: 24px; margin-top: 40px; display: flex; align-items: center; justify-content: center;">
+            <div class="spinner"></div>
+            <span style="margin-left: 10px;">Fetching your recommendations</span>
+        </div>
+          
+
+        <div class="contentContainers">
+            <div id="exploreContainer">
+                <div id="movieContainer">
+                  <div>
+                    <h2 id="movie-title"></h2>
+                    <div class="test">
+                      <p id="movie-genre"> </p>
+                      <p id="movie-year"></p>
+        
+                    </div>
+                  </div>
+          
+                    <div class="movie_info">
+                      <div id="rating_container">
+                        <p id="movie-rating"></p>
+                      </div>
+                    </div>
+        
+                </div>
+                <div class="buttonsContainer">
+                    <button id="yes-btn">Yes 👍</button>
+                    <button id="no-btn">No 👎</button>
+                </div>
+              </div>
+
+        </div>
+
+
+
     </div>
 </body>
 </html>

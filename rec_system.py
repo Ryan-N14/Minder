@@ -179,8 +179,6 @@ class MovieRecommender:
 def get_user_preferences(user_id, supabase):
     # This function calls and gather all of the movies from our database
     liked = supabase.table("user_inputs").select("movie_id").eq("user_id", user_id).eq("liked", True).execute() #liked movies
-
-    print(liked)
     
     disliked = supabase.table("user_inputs").select("movie_id").eq("user_id", user_id).eq("liked", False).execute() #disliked movies
     return [r['movie_id'] for r in liked.data], [r['movie_id'] for r in disliked.data]
