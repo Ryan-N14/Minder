@@ -173,3 +173,26 @@ class MovieRecommender:
             "genres": list(movie['genres']),
             "poster_url": f"https://img.omdbapi.com/?i={movie['id']}&apikey=YOUR_OMDB_API_KEY"
         }
+
+# ------------ Supabase Helper Functions ------------
+
+def get_user_preferences(user_id, supabase):
+    # This function calls and gather all of the movies from our database
+    liked = supabase.table("user_inputs").select("movie_id").eq("user_id", user_id).eq("liked", True).execute() #liked movies
+
+    print(liked)
+    
+    disliked = supabase.table("user_inputs").select("movie_id").eq("user_id", user_id).eq("liked", False).execute() #disliked movies
+    return [r['movie_id'] for r in liked.data], [r['movie_id'] for r in disliked.data]
+
+
+
+# Function builds a recommender for each user depending on their preferences
+def build_recommender_from_supabase(user_id, supabase):
+    liked_ids, disliked_ids = get_user_preferences(user_id, supabase)
+    recommender = MovieRecommender()
+    for movie_id in liked_ids:
+        recommender.update_preferences(movie_id, liked=True)
+    for movie_id in disliked_ids:
+        recommender.update_preferences(movie_id, liked=False)
+    return recommender
