@@ -11,6 +11,7 @@ const movieYear = document.getElementById("movie-year");
 const movieRating = document.getElementById("movie-rating");
 const yesBtn = document.getElementById("yes-btn");
 const noBtn = document.getElementById("no-btn");
+const saveBtn = document.getElementById("save-btn");
 
 let movies = [];
 let currentMovieIndex = 0;
@@ -19,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchMovies();
 });
 
+// Async function to fetchMovies from backend
 async function fetchMovies() {
   console.log("Grabbing explore page fetching movies");
   try {
@@ -106,6 +108,36 @@ async function savePreference(liked) {
   }, 500);
 }
 
+// Save movie to watch list
+async function saveMovie() {
+  const movie = movies[currentMovieIndex];
+
+  try {
+    const response = await fetch("http://127.0.0.1:5000/save_movie", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        movie_id: movie.id,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const res = await response.json();
+
+    if (res.message) {
+      alert("Success, Movie has been saved!");
+    } else {
+      alert("Movie has failed to saved :(");
+    }
+  } catch (error) {
+    console.error("error saving movie", error);
+  }
+}
+
 // Button event listeners
 yesBtn.addEventListener("click", () => {
   savePreference(true);
@@ -113,4 +145,8 @@ yesBtn.addEventListener("click", () => {
 
 noBtn.addEventListener("click", () => {
   savePreference(false);
+});
+
+saveBtn.addEventListener("click", () => {
+  saveMovie();
 });

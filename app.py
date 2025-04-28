@@ -95,7 +95,7 @@ def get_movies():
     return jsonify(batch)
 
 
-
+# This route is for the explore page mainly
 @app.route("/feedback", methods=["POST"])
 def feedback():
     # Save user choice after every swipe (IE left or right)
@@ -119,8 +119,26 @@ def feedback():
 
 
 
+@app.route("/save_movie", methods=["POST"])
+def save_movie():
+    # Saves selected movie and add it to database
 
+    #user id
+    user_id = session["user_id"]
+    if not user_id:
+        return jsonify({"error: user not logged in"}), 401
+    
+    #grabbing data
+    data = request.get_json()
+    movie_id = data.get("movie_id")
 
+    # inserting data into database
+    supabase.table("user_watchlist").insert({
+        "user_id": user_id,
+        "movie_id": movie_id,
+    }).execute()
+
+    return jsonify({"message": "Movie has been saved"}), 200
 
 app.register_blueprint(auth_bp, url_prefix="/auth")
 

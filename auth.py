@@ -54,6 +54,7 @@ def signup():
 # this route login users
 @auth_bp.route("/login", methods=["POST", "OPTIONS"])
 def login():
+    print("login endpoint called")
     if request.method == "OPTIONS":
         return jsonify({"status": "CORS preflight OK"}), 200
 
@@ -80,7 +81,7 @@ def login():
             return jsonify({
                 'message': 'Login successful',
                 'user_email': res.user.email,  # ✅ Renamed to avoid triggering user-object serialization
-                'redirect': '/templates/home.html'
+                'redirect': '/templates/explore.html'
             }), 200
         else:
             return jsonify({'error': 'Invalid login'}), 401
@@ -89,7 +90,7 @@ def login():
 
 
 
-
+# This route is only used to save intial feedback
 @auth_bp.route('/savefeedback', methods=["POST", "OPTIONS"])
 def save_feedback():
     if request.method == "OPTIONS":
