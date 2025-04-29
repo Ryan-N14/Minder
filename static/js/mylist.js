@@ -6,6 +6,22 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   fetchSavedMovies();
+
+  // Search listener
+  const searchInput = document.getElementById("movieSearchInput");
+  searchInput.addEventListener("input", function () {
+    const searchTerm = this.value.toLowerCase();
+    const movieCards = document.querySelectorAll(".movie-details");
+
+    movieCards.forEach((card) => {
+      const title = card.querySelector("p").textContent.toLowerCase();
+      if (title.includes(searchTerm)) {
+        card.parentElement.style.display = "block";
+      } else {
+        card.parentElement.style.display = "none";
+      }
+    });
+  });
 });
 
 async function fetchSavedMovies() {
