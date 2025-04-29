@@ -11,14 +11,16 @@
 <body>
   <div class="sidebar">
     <div class="logo-details">
-      <i class='bx bxl-c-plus-plus icon'></i>
+      <i class='bx bx-brain icon'></i>
         <div class="logo_name">Minder</div>
         <i class='bx bx-menu' id="btn" ></i>
     </div>
     <ul class="nav-list">
       <li>
-          <i class='bx bx-search' ></i>
-         <input type="text" placeholder="Search...">
+        <a href="search.html">
+          <i class='bx bx-search-alt'></i>
+          <span class="links_name">Search</span>
+        </a>
          <span class="tooltip">Search</span>
       </li>
       <li>
@@ -46,7 +48,7 @@
          <div class="profile-details">
             <img src="/static/images/pngtree-isolated-cat-on-white-background-png-image_7094927.png" alt="profileImg">
            <div class="name_job">
-             <div class="name">Prem Shahi</div>
+             <div class="name">Ryan Nguyen</div>
            </div>
          </div>
          <i class='bx bx-log-out' id="log_out" ></i>
@@ -55,13 +57,16 @@
   </div>
 
   <section class="content-section">
+      <div class="explore-headers">
         <h1>Explore Movies</h1>
         <p>Discover suggested movies:</p>
+      </div>
+
 
 
         <div id="loadingMessage" style="text-align: center; font-size: 24px; margin-top: 40px; display: flex; align-items: center; justify-content: center;">
-            <div class="spinner"></div>
             <span style="margin-left: 10px;">Fetching your recommendations</span>
+            <div class="spinner"></div>
         </div>
           
 

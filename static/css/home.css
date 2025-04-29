@@ -269,6 +269,60 @@
   }
 }
 
+/* ------------------------------ Explorer Page styles ----------------------------------- */
+
+.explore-headers {
+  color: white;
+}
+
+.explore-headers > h1 {
+  font-weight: 600;
+  font-size: 3rem;
+}
+
+.contentContainers {
+  display: flex;
+  justify-content: center;
+}
+
+#exploreContainer {
+  background-color: white;
+  border-radius: 10px;
+
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: black;
+
+  width: 45%;
+  padding: 5px;
+}
+
+#loadingMessage {
+  font-weight: bold;
+  color: white;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ccc;
+  border-top: 3px solid #4f46e5; /* purple/blue color */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0.4rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* ------------------------------ Saved Movies styles ----------------------------------- */
 
 .mylist-container {
