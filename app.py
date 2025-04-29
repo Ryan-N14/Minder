@@ -140,6 +140,37 @@ def save_movie():
 
     return jsonify({"message": "Movie has been saved"}), 200
 
+
+
+
+
+@app.route("/fetch_movies", methods=["GET"])
+def get_saved_movies():
+
+    user_id = session["user_id"]
+    if not user_id:
+        return jsonify({"error": "Not logged in"}), 401
+
+    try:
+        response = supabase.table("user_watchlist").select("movie_id").eq("user_id", user_id).execute()
+
+        movie_ids = [r["movie_id"] for r in response.data]
+        
+        # Now load full movie details from your Minder.json
+        from rec_system import MovieRecommender
+        recommender = MovieRecommender()
+
+        saved_movies = []
+        for movie in recommender.all_movies:
+            if movie['id'] in movie_ids:
+                saved_movies.append(recommender._format_movie(movie))
+
+        return jsonify(saved_movies)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 app.register_blueprint(auth_bp, url_prefix="/auth")
 
 

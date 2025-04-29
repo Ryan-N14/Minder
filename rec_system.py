@@ -171,7 +171,7 @@ class MovieRecommender:
             "rating": movie['rating'],
             "votes": movie['votes'],
             "genres": list(movie['genres']),
-            "poster_url": f"https://img.omdbapi.com/?i={movie['id']}&apikey=YOUR_OMDB_API_KEY"
+            "poster_url": f"https://img.omdbapi.com/?i={movie['id']}&apikey=c4ae0c8a"
         }
 
 # ------------ Supabase Helper Functions ------------

@@ -1,46 +1,63 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const userNameSpan = document.getElementById('userName');
-    const favoriteGenreSpan = document.getElementById('favoriteGenre');
-    const editProfileBtn = document.getElementById('editProfile');
-    const editForm = document.getElementById('editForm');
-    const nameInput = document.getElementById('nameInput');
-    const genreInput = document.getElementById('genreInput');
-    const saveProfileBtn = document.getElementById('saveProfile');
-    const cancelEditBtn = document.getElementById('cancelEdit');
+document.addEventListener("DOMContentLoaded", () => {
+  const editButton = document.querySelector(".profile-edit");
+  const emailInfo = document.getElementById("email-info");
+  const passwordInfo = document.getElementById("password-info");
 
-    // Load profile from localStorage or set defaults
-    let profile = JSON.parse(localStorage.getItem('userProfile')) || {
-        name: 'Guest',
-        favoriteGenre: 'Not set'
-    };
+  let isEditing = false;
 
-    // Display initial profile info
-    userNameSpan.textContent = profile.name;
-    favoriteGenreSpan.textContent = profile.favoriteGenre;
+  editButton.addEventListener("click", () => {
+    if (!isEditing) {
+      enableEditMode();
+    } else {
+      saveProfileChanges();
+    }
+  });
 
-    // Show edit form when "Edit Profile" is clicked
-    editProfileBtn.addEventListener('click', () => {
-        nameInput.value = profile.name === 'Guest' ? '' : profile.name;
-        genreInput.value = profile.favoriteGenre === 'Not set' ? '' : profile.favoriteGenre;
-        editForm.classList.remove('hidden');
-        editProfileBtn.classList.add('hidden');
-    });
+  function enableEditMode() {
+    isEditing = true;
+    editButton.textContent = "Save";
 
-    // Save profile changes
-    editForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        profile.name = nameInput.value.trim() || 'Guest';
-        profile.favoriteGenre = genreInput.value.trim() || 'Not set';
-        localStorage.setItem('userProfile', JSON.stringify(profile));
-        userNameSpan.textContent = profile.name;
-        favoriteGenreSpan.textContent = profile.favoriteGenre;
-        editForm.classList.add('hidden');
-        editProfileBtn.classList.remove('hidden');
-    });
+    const currentEmail = emailInfo.textContent;
+    const currentPassword = passwordInfo.textContent;
 
-    // Cancel editing
-    cancelEditBtn.addEventListener('click', () => {
-        editForm.classList.add('hidden');
-        editProfileBtn.classList.remove('hidden');
-    });
+    emailInfo.innerHTML = `<input type="email" id="edit-email" value="${currentEmail}" required>`;
+    passwordInfo.innerHTML = `<input type="password" id="edit-password" value="${currentPassword}" required>`;
+  }
+
+  async function saveProfileChanges() {
+    const newEmail = document.getElementById("edit-email").value;
+    const newPassword = document.getElementById("edit-password").value;
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:5000/auth/update_profile",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: newEmail,
+            password: newPassword,
+          }),
+        }
+      );
+
+      const res = await response.json();
+      console.log(res);
+
+      if (res.success) {
+        // Update frontend with new data
+        emailInfo.innerHTML = newEmail;
+        passwordInfo.innerHTML = "********"; // Always hide real password
+
+        editButton.textContent = "Edit";
+        isEditing = false;
+      } else {
+        alert(res.error || "Failed to update profile.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Network error. Please try again.");
+    }
+  }
 });
