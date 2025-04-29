@@ -269,23 +269,98 @@
   }
 }
 
-/* ------------------------------ Saved Movies styles ----------------------------------- */
+/* --------------------------------- Profile section -------------------------------------- */
 
-.mylist-container {
+.profile-container {
+  background-color: #11101d;
+  border-radius: 20px;
+
+  padding: 2rem;
+
   width: 100%;
   color: white;
 }
 
-.list-header {
-  color: white;
-  font-weight: 700;
-  font-size: 2.3rem;
+/* ---- Style for header of profile box ---- */
+.profile-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  justify-content: space-between;
+  margin-left: 2rem;
 }
 
-#savedMoviesContainer {
-  margin-top: 2rem;
+/* ---- Header buttons ---- */
+
+.headerBtn-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+  gap: 1rem;
+}
+
+#discardBtn,
+#saveBtn {
+  width: 5rem;
+  height: 3rem;
+
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.45s ease;
+}
+
+#discardBtn {
+  background-color: red;
+  color: white;
+}
+
+#discardBtn:hover {
+  opacity: 0.7;
+}
+
+#saveBtn {
+  background-color: #0bda51;
+  color: white;
+}
+
+#saveBtn:hover {
+  opacity: 0.7;
+}
+
+/* ---- User information section ---- */
+.user-information {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4rem;
   justify-content: center;
+  align-items: center;
+  margin: 4rem;
+}
+
+.user-identity {
+  display: flex;
+  flex-direction: row;
+
+  gap: 8rem;
+}
+
+/* ---- Credential information section ---- */
+
+.credentials {
+  display: flex;
+  flex-direction: row;
+
+  gap: 8rem;
+}
+
+#email-input,
+#password-input,
+#firstName-input,
+#lastName-input {
+  height: 2rem;
+  width: 25rem;
+
+  margin: 0.2rem;
 }
