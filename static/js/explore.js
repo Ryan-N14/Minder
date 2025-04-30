@@ -9,6 +9,7 @@ const movieTitle = document.getElementById("movie-title");
 const movieGenre = document.getElementById("movie-genre");
 const movieYear = document.getElementById("movie-year");
 const movieRating = document.getElementById("movie-rating");
+const moviePoster = document.getElementById("exploreMovieImg");
 const yesBtn = document.getElementById("yes-btn");
 const noBtn = document.getElementById("no-btn");
 const saveBtn = document.getElementById("save-btn");
@@ -62,18 +63,21 @@ function showMovie() {
   const movie = movies[currentMovieIndex];
 
   console.log("showMovie before exploreContainer");
-  const exploreContainer = document.getElementById("exploreContainer");
+  const exploreContainer = document.getElementById("explore-container");
   const loadingMessage = document.getElementById("loadingMessage");
 
   loadingMessage.style.display = "none";
   exploreContainer.style.display = "flex"; // Set it back to flex
 
   movieTitle.textContent = movie.title || "Unknown Title";
+  moviePoster.src = movie.poster_url;
   movieGenre.textContent = `Genres: ${
     movie.genres ? movie.genres.join(", ") : "Unknown"
   }`;
-  movieYear.textContent = `Year: ${movie.year || "Unknown"}`;
-  movieRating.innerHTML = `<b>Rating:</b> ${movie.rating || "N/A"}/10`;
+  movieYear.textContent = `${movie.year || "Unknown"}`;
+  movieRating.innerHTML = `<i class='bx bxs-star'></i>${
+    movie.rating || "N/A"
+  }/10`;
 }
 
 // Save the user's like or dislike to backend

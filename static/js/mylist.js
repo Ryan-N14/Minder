@@ -62,9 +62,70 @@ function displaySavedMovies(movies) {
       <p>${movie.title}</p>
     `;
 
+    // Add click event to show modal
+    movieCard.addEventListener("click", () => showMovieModal(movie));
+
     movieCard.appendChild(movieDetails); // Put movie-details inside movie-cards
     container.appendChild(movieCard); // Add the whole movie-card into the container
+    const loadingMessage = document.getElementById("loadingMessage");
+    loadingMessage.style.display = "none";
   });
+}
+
+// Function to show movie modal
+function showMovieModal(movie) {
+  const modal = document.getElementById("movieModal");
+  const modalPoster = document.getElementById("modalPoster");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalGenres = document.getElementById("modalGenres");
+  const modalYear = document.getElementById("modalYear");
+  const modalRating = document.getElementById("modalRating");
+  const deleteBtn = document.getElementById("deleteMovieBtn");
+
+  // Set modal content
+  modalPoster.src = movie.poster_url;
+  modalTitle.textContent = movie.title;
+  modalGenres.textContent = `${movie.genres}`;
+  modalYear.textContent = `${movie.year}`;
+  modalRating.innerHTML = `<i class='bx bxs-star'></i>${
+    movie.rating || "N/A"
+  }/10`;
+
+  // Show modal
+  modal.style.display = "block";
+
+  // Close modal when clicking the X
+  document.getElementById("modalClose").onclick = function () {
+    modal.style.display = "none";
+  };
+
+  // Close modal when clicking outside
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+
+  // Handle delete button click
+  deleteBtn.onclick = async function () {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/delete_movie", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ movie_id: movie.movie_id }),
+      });
+
+      if (response.ok) {
+        modal.style.display = "none";
+        fetchSavedMovies(); // Refresh the list
+      } else {
+        console.error("Failed to delete movie");
+      }
+    } catch (error) {
+      console.error("Error deleting movie:", error);
+    }
+  };
 }
 
 /* ------------------------ Navbar functions ----------------------------------- */
