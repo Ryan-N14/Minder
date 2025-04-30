@@ -19,7 +19,7 @@ async function main() {
   fetchMovies();
 }
 
-// Fetch 10 random movies from Flask backends
+// Fetch random movies from Flask backends
 async function fetchMovies() {
   try {
     const response = await fetch("http://127.0.0.1:5000/get_movies", {
@@ -119,55 +119,3 @@ async function saveFeedback() {
     console.error(error);
   }
 }
-
-/*
-async function getSupabaseConfig() {
-  try {
-    const response = await fetch("http://127.0.0.1:5000/auth/get-config");
-    const data = await response.json();
-    return data.supabase_url;
-  } catch (error) {
-    console.error("Error fetching Supabase config:", error);
-  }
-}
-
-// Initialize Supabase in the frontend
-async function initializeSupabase() {
-  const supabaseUrl = await getSupabaseConfig();
-
-  console.log("supabse_url: " + supabaseUrl);
-  const supabaseKey =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvbXBzcmVndGhqbHpzamp2c2NmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAyNDIyMDIsImV4cCI6MjA1NTgxODIwMn0.Z6oY7FQUgfyRzqY7o3p4NQEEOZWLYFoA2vybucfaws0"; // Store securely, or get from backend (if needed)
-
-  if (!supabaseUrl) {
-    console.error("Supabase URL not found");
-    return;
-  }
-
-  supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-  console.log("Supabase initialized:", supabase);
-
-  // Example: Get logged-in user
-  const user = await supabase.auth.getUser();
-  console.log("Current User:", user);
-}
-
-async function savePreference(liked) {
-  console.log(`User selected: ${liked ? "Yes" : "No"}`); // changed this to update supabase
-
-  const { data: session, error } = await supabase.auth.getSession();
-
-  if (error || !session || !session.user) {
-    console.error("User not authenticated.");
-    return;
-  }
-
-  const user_id = session.user.id;
-  const movie = movies[currentMovieIndex];
-  const movie_id = movie.id;
-
-  console.log("User ID: " + user_id);
-
-  currentMovieIndex++;
-  showMovie(); // Move to the next movie
-}*/

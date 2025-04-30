@@ -1,12 +1,13 @@
 window.addEventListener("DOMContentLoaded", main);
 
 function main() {
-  const loginBtn = document.getElementById("loginbtn");
+  const loginBtn = document.getElementById("signin_form");
   const signupBtn = document.getElementById("signupBtn");
 
   if (loginBtn) {
-    loginBtn.addEventListener("click", function (event) {
+    loginBtn.addEventListener("submit", function (event) {
       event.preventDefault();
+      console.log("logging in...");
       login();
     });
   }
@@ -55,9 +56,11 @@ async function signup() {
  */
 
 async function login() {
+  console.log("log in function");
   // Email and password from frontend
   const email = document.getElementById("signin_email").value;
   const password = document.getElementById("signin_password").value;
+  const loginError = document.getElementById("loginError");
 
   // calling end point
   const response = await fetch("http://127.0.0.1:5000/auth/login", {
@@ -71,12 +74,16 @@ async function login() {
     }),
   });
 
-  // this section still needs to be coded but will do that later after finishing up the sign up portion
   const res = await response.json();
   console.log(res);
+
+  if (res.redirect) {
+    window.location.href = res.redirect;
+  } else {
+    loginError.textContent = "Invalid Password or email";
+  }
 }
 
-/*
 function checkPassword() {
   var password = document.getElementById("password");
   var confirmPassword = document.getElementById("confirm-password");
@@ -98,25 +105,11 @@ function checkPassword() {
 function checkForm() {
   var fullName = document.getElementById("fullName");
   var email = document.getElementById("email");
-  var submitBtn = document.getElementById("submitBTN");
+  var signupBtn = document.getElementById("signupBtn");
 
   if (fullName.value && email.value) {
-    submitBtn.disabled = false;
+    signupBtn.disabled = false;
   } else {
-    submitBtn.disabled = true;
+    signupBtn.disabled = true;
   }
 }
-
-/*
-function main() {
-  checkPassword();
-  document.getElementById("fullName").addEventListener("input", checkForm);
-  document.getElementById("email").addEventListener("input", checkForm);
-
-  document
-    .getElementById("signup_form")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
-      signUp();
-    });
-}*/

@@ -1,13 +1,23 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 from auth import auth_bp
 from flask_cors import CORS
+import os
 import json
 import random
+from rec_system import build_recommender_from_supabase, get_user_preferences
+from supabase import create_client
 
 
 app = Flask(__name__)
 
 app.secret_key = "secretKey"
+
+# Initialize Supabase Client
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY") 
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+
 
 
 # CORS configuration to allow a single origin
@@ -19,47 +29,8 @@ CORS(app, supports_credentials=True, resources={
     }
 })
 
-# Loading IMDB clean dataset 
-with open ("Minder.json", "r", encoding="utf-8") as file:
-    movies = json.load(file)
 
-
-filtered_movies = [
-    {
-        "id": movie["tconst"],
-        "title": movie["primaryTitle"],
-        "year": int(movie["startYear"]) if movie["startYear"] else None,
-        "runtime": int(movie["runtimeMinutes"]) if movie["runtimeMinutes"] else None,
-        "rating": float(movie["averageRating"]) if movie["averageRating"] else None,
-        "votes": int(movie["numVotes"]) if movie["numVotes"] else 0,
-        "genres": movie["genres"].split(",") if movie["genres"] else [],
-        "poster_url": f"https://img.omdbapi.com/?i={movie['tconst']}&apikey=YOUR_OMDB_API_KEY"  # Optional poster
-    }
-    for movie in movies
-    if not movie["isAdult"] and movie["genres"]  # Exclude adult movies and empty genres
-]
-
-@app.route("/get_movies", methods=["GET", "OPTIONS" ])
-def get_movies():
-    print(f"🎬 Reached /get_movies with method {request.method}")
-
-    if not filtered_movies or len(filtered_movies) < 1:
-        return jsonify({"error": "No movies available"}), 500
-
-    if request.method == "OPTIONS":
-        return jsonify({"status": "CORS preflight OK"}), 200
-    
-    selected_movies = random.sample(filtered_movies, 10)
-    return jsonify(selected_movies)
-
-
-
-
-
-
-app.register_blueprint(auth_bp, url_prefix="/auth")
-
-
+# ------------------------ ROUTES -------------------------
 @app.before_request
 def log_request():
     print(f"👀 Incoming request: {request.method} {request.path}")
@@ -84,6 +55,126 @@ def handle_exception(e):
     response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
     response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
     return response
+
+
+
+# ----------------------------- ENDPOINTS ---------------------------
+
+# Ideally this route is called after the user is logged in otherwise it will throw an error and not work
+@app.route("/get_movies", methods=["GET", "OPTIONS" ])
+def get_movies():
+    if request.method == "OPTIONS":
+        # Handle CORS preflight request properly
+        response = jsonify({"status": "OK"})
+        response.status_code = 200
+        return response
+
+    user_id = session["user_id"]
+    if not user_id:
+        print("user not found")
+        return jsonify({"error: user not logged in"}), 401
+
+    #Create recommender
+    recommender = build_recommender_from_supabase(user_id, supabase)
+    print("Building recommender")
+
+    # grabbing total liked to see if its a new user or already a member
+    liked_id, disliked_id = get_user_preferences(user_id, supabase)
+    total_swipes = len(liked_id) + len(disliked_id)
+
+    if(total_swipes < 10):
+        batch_size = 10
+    else:
+        batch_size = 30
+
+
+    batch = recommender.get_next_batch(batch_size)
+    # Returning the batch of movies
+
+    print("Returning...")
+    return jsonify(batch)
+
+
+# This route is for the explore page mainly
+@app.route("/feedback", methods=["POST"])
+def feedback():
+    # Save user choice after every swipe (IE left or right)
+
+    user_id = session["user_id"]
+    if not user_id:
+        return jsonify({"error: user not logged in"}), 401
+
+    data = request.get_json()
+    movie_id = data.get("movie_id")
+    liked = data.get("liked", True) # defaults to True if there's no liekd
+
+    supabase.table("user_inputs").insert({
+        "user_id": user_id,
+        "movie_id": movie_id,
+        "liked": liked
+    }).execute()
+
+
+    return jsonify({"message" : "Feedback saved sucessfully"}), 200
+
+
+
+@app.route("/save_movie", methods=["POST"])
+def save_movie():
+    # Saves selected movie and add it to database
+
+    #user id
+    user_id = session["user_id"]
+    if not user_id:
+        return jsonify({"error: user not logged in"}), 401
+    
+    #grabbing data
+    data = request.get_json()
+    movie_id = data.get("movie_id")
+
+    # inserting data into database
+    supabase.table("user_watchlist").insert({
+        "user_id": user_id,
+        "movie_id": movie_id,
+    }).execute()
+
+    return jsonify({"message": "Movie has been saved"}), 200
+
+
+
+
+
+@app.route("/fetch_movies", methods=["GET"])
+def get_saved_movies():
+
+    user_id = session["user_id"]
+    if not user_id:
+        return jsonify({"error": "Not logged in"}), 401
+
+    try:
+        response = supabase.table("user_watchlist").select("movie_id").eq("user_id", user_id).execute()
+
+        movie_ids = [r["movie_id"] for r in response.data]
+        
+        # Now load full movie details from your Minder.json
+        from rec_system import MovieRecommender
+        recommender = MovieRecommender()
+
+        saved_movies = []
+        for movie in recommender.all_movies:
+            if movie['id'] in movie_ids:
+                saved_movies.append(recommender._format_movie(movie))
+
+        return jsonify(saved_movies)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+app.register_blueprint(auth_bp, url_prefix="/auth")
+
+
+
 
 if(__name__ == "__main__"):
     app.run(debug=True)
