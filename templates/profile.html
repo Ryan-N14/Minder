@@ -62,12 +62,7 @@
         <div class="profile-container">
             <div class="profile-header">
                 <h1>Your Profile</h1>
-
-                <div class="headerBtn-container">
-                    <button id="discardBtn">Discard</button>
-                    <button id="saveBtn"><i class='bx bx-save'></i>Save</button> 
-                </div>
-
+                <button id="editBtn"><i class='bx bx-edit'></i>Edit</button>
             </div>
 
             <div class="user-information">
@@ -77,11 +72,21 @@
                     <div class="user-identity">
                         <div id="firstName-container">
                             <p>First Name</p>
-                            <input type="text" id="firstName-input">
+                            <div class="view-mode">
+                                <span id="firstName-view">Ryan</span>
+                            </div>
+                            <div class="edit-mode">
+                                <input type="text" id="firstName-input">
+                            </div>
                         </div>
                         <div id="lastName-container">
                             <p>Last Name</p>
-                            <input type="text" id="lastName-input">
+                            <div class="view-mode">
+                                <span id="lastName-view">Nguyen</span>
+                            </div>
+                            <div class="edit-mode">
+                                <input type="text" id="lastName-input">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -93,14 +98,29 @@
                         <div class="credentials">
                             <div id="email-container">
                                 <p>Email Address</p>
-                                <input type="text" id="email-input">
+                                <div class="view-mode">
+                                    <span id="email-view">ryan.nguyen@example.com</span>
+                                </div>
+                                <div class="edit-mode">
+                                    <input type="text" id="email-input">
+                                </div>
                             </div>
                             <div id="password-container">
                                 <p>Password</p>
-                                <input type="text" id="password-input">
+                                <div class="view-mode">
+                                    <span id="password-view">••••••••</span>
+                                </div>
+                                <div class="edit-mode">
+                                    <input type="password" id="password-input">
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="edit-controls">
+                    <button id="discardBtn">Discard</button>
+                    <button id="saveBtn"><i class='bx bx-save'></i>Save</button>
                 </div>
             </div>
         </div>

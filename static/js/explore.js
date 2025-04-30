@@ -13,6 +13,8 @@ const moviePoster = document.getElementById("exploreMovieImg");
 const yesBtn = document.getElementById("yes-btn");
 const noBtn = document.getElementById("no-btn");
 const saveBtn = document.getElementById("save-btn");
+let loggingOutBtn = document.getElementById("log_out");
+loggingOutBtn.addEventListener("click", loggingOut);
 
 let movies = [];
 let currentMovieIndex = 0;
@@ -71,6 +73,10 @@ function showMovie() {
 
   movieTitle.textContent = movie.title || "Unknown Title";
   moviePoster.src = movie.poster_url;
+  moviePoster.onerror = function () {
+    this.onerror = null;
+    this.src = "/static/images/No_Image_Available.jpg";
+  };
   movieGenre.textContent = `Genres: ${
     movie.genres ? movie.genres.join(", ") : "Unknown"
   }`;
@@ -173,5 +179,22 @@ function menuBtnChange() {
     closeBtn.classList.replace("bx-menu", "bx-menu-alt-right"); //replacing the iocns class
   } else {
     closeBtn.classList.replace("bx-menu-alt-right", "bx-menu"); //replacing the iocns class
+  }
+}
+
+async function loggingOut() {
+  try {
+    const res = await fetch("http://127.0.0.1:5000/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (res.ok) {
+      window.location.href = "/templates/index.html"; //redriects to login screen
+    } else {
+      alert("Logout failed.");
+    }
+  } catch (err) {
+    console.error("Logout error:", err);
   }
 }
