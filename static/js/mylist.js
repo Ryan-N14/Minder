@@ -35,8 +35,15 @@ async function fetchSavedMovies() {
     const movies = await response.json();
 
     displaySavedMovies(movies);
+    // Make sure to show the container after loading
+    document.getElementById("savedMoviesContainer").style.display = "flex";
+    document.getElementById("loadingMessage").style.display = "none";
   } catch (error) {
     console.error("Error fetching movies", error);
+    document.getElementById("loadingMessage").style.display = "none";
+    document.getElementById("savedMoviesContainer").style.display = "flex";
+    document.getElementById("savedMoviesContainer").innerHTML =
+      "<p>Error loading movies. Please try again.</p>";
   }
 }
 
@@ -67,9 +74,27 @@ function displaySavedMovies(movies) {
 
     movieCard.appendChild(movieDetails); // Put movie-details inside movie-cards
     container.appendChild(movieCard); // Add the whole movie-card into the container
-    const loadingMessage = document.getElementById("loadingMessage");
-    loadingMessage.style.display = "none";
   });
+}
+
+let loggingOutBtn = document.getElementById("log_out");
+loggingOutBtn.addEventListener("click", loggingOut);
+
+async function loggingOut() {
+  try {
+    const res = await fetch("http://127.0.0.1:5000/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (res.ok) {
+      window.location.href = "/templates/index.html"; //redriects to login screen
+    } else {
+      alert("Logout failed.");
+    }
+  } catch (err) {
+    console.error("Logout error:", err);
+  }
 }
 
 // Function to show movie modal
@@ -108,35 +133,49 @@ function showMovieModal(movie) {
 
   // Handle delete button click
   deleteBtn.onclick = async function () {
+    const movieId = movie.id;
+    console.log("Attempting to delete movie with ID:", movieId);
+
     try {
       const response = await fetch("http://127.0.0.1:5000/delete_movie", {
-        method: "POST",
+        method: "DELETE",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ movie_id: movie.movie_id }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ movie_id: movie.id }),
+        mode: "cors",
       });
 
       if (response.ok) {
         modal.style.display = "none";
+        // Show loading message before refreshing
+        document.getElementById("loadingMessage").style.display = "flex";
+        document.getElementById("savedMoviesContainer").style.display = "none";
         fetchSavedMovies(); // Refresh the list
       } else {
-        console.error("Failed to delete movie");
+        const errorData = await response.json();
+        console.error("Failed to delete movie:", errorData.error);
+        alert("Failed to delete movie. Please try again.");
       }
     } catch (error) {
       console.error("Error deleting movie:", error);
+      alert("An error occurred while deleting the movie. Please try again.");
     }
   };
 }
 
 /* ------------------------ Navbar functions ----------------------------------- */
-
+let logoutBtn = document.getElementById("log_out");
 let sidebar = document.querySelector(".sidebar");
 let closeBtn = document.querySelector("#btn");
 let searchBtn = document.querySelector(".bx-search");
+
 closeBtn.addEventListener("click", () => {
   sidebar.classList.toggle("open");
   menuBtnChange(); //calling the function(optional)
 });
+
 searchBtn.addEventListener("click", () => {
   // Sidebar open when you click on the search iocn
   sidebar.classList.toggle("open");

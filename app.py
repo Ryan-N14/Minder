@@ -23,9 +23,10 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 # CORS configuration to allow a single origin
 CORS(app, supports_credentials=True, resources={
     r"/*": {
-        "origins": "*",
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": "Content-Type,Authorization"
+        "origins": "http://127.0.0.1:5500",
+        "methods": ["GET", "POST", "DELETE", "OPTIONS"],
+        "allow_headers": "Content-Type,Authorization",
+        "supports_credentials": True
     }
 })
 
@@ -42,7 +43,7 @@ def after_request(response):
     response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5500"
     response.headers["Access-Control-Allow-Credentials"] = "true"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
-    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,DELETE,OPTIONS"
     return response
 
 @app.errorhandler(Exception)
@@ -53,7 +54,7 @@ def handle_exception(e):
     response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5500"
     response.headers["Access-Control-Allow-Credentials"] = "true"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
-    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,DELETE,OPTIONS"
     return response
 
 
@@ -169,6 +170,140 @@ def get_saved_movies():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+
+
+@app.route("/delete_movie", methods=["DELETE", "OPTIONS"])
+def deleteMovies():
+    # Handle CORS preflight request
+    if request.method == "OPTIONS":
+        response = jsonify({"status": "CORS preflight OK"})
+        response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5500"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "DELETE,OPTIONS"
+        return response
+
+    # Get movie_id from request data
+    data = request.get_json()
+    movie_id = data.get("movie_id")
+    
+    if not movie_id:
+        return jsonify({"error": "Movie ID is required"}), 400
+
+    user_id = session.get("user_id") # Grabbing User
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    try:
+        print(f"Attempting to delete movie {movie_id} for user {user_id}")
+        
+        # First check if the movie exists in the user's watchlist
+        check_response = supabase.table("user_watchlist").select("*").eq("user_id", user_id).eq("movie_id", movie_id).execute()
+        
+        if not check_response.data:
+            return jsonify({"error": "Movie not found in watchlist"}), 404
+            
+        print("Movie found in watchlist, proceeding with delete")
+        
+        # Perform the delete operation
+        response = supabase.table("user_watchlist").delete().match({
+            "user_id": user_id, 
+            "movie_id": movie_id
+        }).execute()
+
+        print("Delete response:", response)
+
+        # Check if the response contains any errors
+        if hasattr(response, 'error') and response.error:
+            print("Supabase error:", response.error)
+            return jsonify({
+                "error": "Delete failed", 
+                "details": str(response.error)
+            }), 500
+
+        return jsonify({"message": "Movie deleted successfully"}), 200
+
+    except Exception as e:
+        print("Exception during delete:", str(e))
+        return jsonify({
+            "error": "Delete failed", 
+            "details": str(e)
+        }), 500
+
+
+@app.route("/search_movies", methods=["GET", "OPTIONS"])
+def search_movies():
+    if request.method == "OPTIONS":
+        response = jsonify({"status": "CORS preflight OK"})
+        response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5000"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "GET,OPTIONS"
+        return response
+
+    try:
+        # Get search query and pagination parameters
+        query = request.args.get("query", "").lower()
+        page = int(request.args.get("page", 1))
+        per_page = int(request.args.get("per_page", 20))
+        
+        print(f"Search query: {query}")
+        
+        if not query or len(query) < 2:
+            return jsonify({"movies": []})
+
+        # Load movies from your recommender
+        from rec_system import MovieRecommender
+        recommender = MovieRecommender()
+        
+        print(f"Total movies loaded: {len(recommender.all_movies)}")
+        
+        # Search through movies (case-insensitive)
+        results = []
+        for movie in recommender.all_movies:
+            try:
+                # Search in title and genres
+                title_match = query in movie['title'].lower()
+                genre_match = any(query in genre.lower() for genre in movie['genres'])
+                
+                if title_match or genre_match:
+                    # Format movie to match frontend expectations
+                    formatted_movie = {
+                        'movie_id': movie['id'],
+                        'title': movie['title'],
+                        'poster_url': f"https://img.omdbapi.com/?i={movie['id']}&apikey=c4ae0c8a",
+                        'genres': list(movie['genres']),
+                        'year': movie['year'],
+                        'rating': movie['rating']
+                    }
+                    results.append(formatted_movie)
+            except (KeyError, AttributeError) as e:
+                print(f"Error processing movie: {str(e)}")
+                continue
+
+        print(f"Found {len(results)} matching movies")
+        
+        # Calculate pagination
+        start_idx = (page - 1) * per_page
+        end_idx = start_idx + per_page
+        paginated_results = results[start_idx:end_idx]
+
+        return jsonify({
+            "movies": paginated_results,
+            "total": len(results),
+            "page": page,
+            "per_page": per_page,
+            "total_pages": (len(results) + per_page - 1) // per_page
+        })
+
+    except Exception as e:
+        print(f"Search error: {str(e)}")
+        return jsonify({
+            "movies": [],
+            "error": "An error occurred while searching movies"
+        }), 500
 
 
 app.register_blueprint(auth_bp, url_prefix="/auth")

@@ -9,8 +9,17 @@ import os
 from dotenv import load_dotenv
 from flask import Blueprint, request, jsonify, session
 from supabase import create_client, Client
+from flask_cors import CORS
 
 auth_bp = Blueprint("auth", __name__)
+CORS(auth_bp, supports_credentials=True, resources={
+    r"/*": {
+        "origins": "http://127.0.0.1:5500",
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": "Content-Type,Authorization",
+        "supports_credentials": True
+    }
+})
 
 load_dotenv()
 
@@ -19,6 +28,21 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY") 
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+
+
+# ---------- Log out endpoint -----------------
+
+@auth_bp.route("/logout", methods=["POST", "OPTIONS"])
+def logout():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "CORS preflight OK"}), 200
+    
+    session.clear()
+    return jsonify({"message": "Logged out successfully"}), 200
+
+
+
 
 
 # this route signup the user and creates a session for that user.
@@ -139,8 +163,6 @@ def save_feedback():
 
 
         return jsonify({"redirect": "/templates/explore.html"}), 200
-        
-
     except Exception as e:
         return jsonify({"error" : str(e)}), 500
 
