@@ -27,6 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const movieModal = document.getElementById("movieModal");
   const modalClose = document.getElementById("modalClose");
   const saveMovieBtn = document.getElementById("saveMovieBtn");
+  let loggingOutBtn = document.getElementById("log_out");
+  loggingOutBtn.addEventListener("click", loggingOut);
 
   let currentMovie = null;
   let debounceTimer;
@@ -203,3 +205,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+async function loggingOut() {
+  try {
+    const res = await fetch("http://127.0.0.1:5000/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (res.ok) {
+      window.location.href = "/templates/index.html"; //redriects to login screen
+    } else {
+      alert("Logout failed.");
+    }
+  } catch (err) {
+    console.error("Logout error:", err);
+  }
+}

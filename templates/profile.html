@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Profile - Minder</title>
     <link rel="stylesheet" href="/static/css/profile.css">
+    <script src="/static/js/common.js" defer></script>
     <script src="/static/js/profile.js" defer></script>
 
     <!-- Boxicons CSS -->
@@ -49,7 +50,7 @@
              <div class="profile-details">
                 <img src="/static/images/pngtree-isolated-cat-on-white-background-png-image_7094927.png" alt="profileImg">
                <div class="name_job">
-                 <div class="name">Ryan Nguyen</div>
+                 <div class="name" id="sidebar-name">Loading...</div>
                </div>
              </div>
              <i class='bx bx-log-out' id="log_out" ></i>
@@ -57,11 +58,14 @@
         </ul>
       </div>
 
-
       <section class="content-section">
         <div class="profile-container">
             <div class="profile-header">
                 <h1>Your Profile</h1>
+                <div class="edit-controls">
+                    <button id="discardBtn">Discard</button>
+                    <button id="saveBtn"><i class='bx bx-save'></i>Save</button>
+                </div>
                 <button id="editBtn"><i class='bx bx-edit'></i>Edit</button>
             </div>
 
@@ -73,7 +77,7 @@
                         <div id="firstName-container">
                             <p>First Name</p>
                             <div class="view-mode">
-                                <span id="firstName-view">Ryan</span>
+                                <span id="firstName-view">Loading...</span>
                             </div>
                             <div class="edit-mode">
                                 <input type="text" id="firstName-input">
@@ -82,7 +86,7 @@
                         <div id="lastName-container">
                             <p>Last Name</p>
                             <div class="view-mode">
-                                <span id="lastName-view">Nguyen</span>
+                                <span id="lastName-view">Loading...</span>
                             </div>
                             <div class="edit-mode">
                                 <input type="text" id="lastName-input">
@@ -99,10 +103,10 @@
                             <div id="email-container">
                                 <p>Email Address</p>
                                 <div class="view-mode">
-                                    <span id="email-view">ryan.nguyen@example.com</span>
+                                    <span id="email-view">Loading...</span>
                                 </div>
                                 <div class="edit-mode">
-                                    <input type="text" id="email-input">
+                                    <input type="text" id="email-input" disabled>
                                 </div>
                             </div>
                             <div id="password-container">
@@ -111,20 +115,14 @@
                                     <span id="password-view">••••••••</span>
                                 </div>
                                 <div class="edit-mode">
-                                    <input type="password" id="password-input">
+                                    <input type="password" id="password-input" disabled>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="edit-controls">
-                    <button id="discardBtn">Discard</button>
-                    <button id="saveBtn"><i class='bx bx-save'></i>Save</button>
-                </div>
             </div>
         </div>
       </section>
-
 </body>
 </html>

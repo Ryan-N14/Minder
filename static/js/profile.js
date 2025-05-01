@@ -1,143 +1,160 @@
-/* ----------------- navbar -------------------- */
-let sidebar = document.querySelector(".sidebar");
-let closeBtn = document.querySelector("#btn");
-let searchBtn = document.querySelector(".bx-search");
-closeBtn.addEventListener("click", () => {
-  sidebar.classList.toggle("open");
-  menuBtnChange(); //calling the function(optional)
-});
-searchBtn.addEventListener("click", () => {
-  // Sidebar open when you click on the search iocn
-  sidebar.classList.toggle("open");
-  menuBtnChange(); //calling the function(optional)
-});
-// following are the code to change sidebar button(optional)
-function menuBtnChange() {
-  if (sidebar.classList.contains("open")) {
-    closeBtn.classList.replace("bx-menu", "bx-menu-alt-right"); //replacing the iocns class
-  } else {
-    closeBtn.classList.replace("bx-menu-alt-right", "bx-menu"); //replacing the iocns class
+console.log("✅ profile.js is loaded");
+
+// Function to fetch user profile data
+async function fetchUserProfile() {
+  try {
+    const response = await fetch("http://127.0.0.1:5000/get_profile", {
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch profile");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    return null;
   }
 }
 
-// Profile view/edit mode handling
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM Content Loaded");
-  const editBtn = document.getElementById("editBtn");
-  const discardBtn = document.getElementById("discardBtn");
-  const saveBtn = document.getElementById("saveBtn");
+// Function to update user profile
+async function updateUserProfile(firstName, lastName) {
+  try {
+    const response = await fetch("http://127.0.0.1:5000/update_profile", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        firstName,
+        lastName,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update profile");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return null;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("✅ DOM fully loaded");
+
   const profileContainer = document.querySelector(".profile-container");
+  const editBtn = document.getElementById("editBtn");
+  const saveBtn = document.getElementById("saveBtn");
+  const discardBtn = document.getElementById("discardBtn");
 
-  console.log("Edit button:", editBtn);
-  console.log("Profile container:", profileContainer);
+  const firstNameView = document.getElementById("firstName-view");
+  const lastNameView = document.getElementById("lastName-view");
+  const emailView = document.getElementById("email-view");
+  const sidebarName = document.getElementById("sidebar-name");
 
-  // Load user data
+  const firstNameInput = document.getElementById("firstName-input");
+  const lastNameInput = document.getElementById("lastName-input");
+  const emailInput = document.getElementById("email-input");
+  const passwordInput = document.getElementById("password-input");
+  let loggingOutBtn = document.getElementById("log_out");
+  loggingOutBtn.addEventListener("click", loggingOut);
+
+  // Load user data when page loads
+  async function loadUserData() {
+    const profileData = await fetchUserProfile();
+    if (profileData) {
+      firstNameView.textContent = profileData.first_name || "";
+      lastNameView.textContent = profileData.last_name || "";
+      emailView.textContent = profileData.email || "";
+    }
+  }
+
+  // Call loadUserData when page loads
   loadUserData();
 
-  // Edit button click handler
   editBtn.addEventListener("click", () => {
     console.log("Edit button clicked");
     profileContainer.classList.add("edit-state");
-    console.log("Profile container classes:", profileContainer.classList);
-    // Store current values in case of discard
-    storeCurrentValues();
-    // Populate input fields with current values
-    document.getElementById("firstName-input").value =
-      document.getElementById("firstName-view").textContent;
-    document.getElementById("lastName-input").value =
-      document.getElementById("lastName-view").textContent;
-    document.getElementById("email-input").value =
-      document.getElementById("email-view").textContent;
+
+    firstNameInput.value = firstNameView.textContent.trim();
+    lastNameInput.value = lastNameView.textContent.trim();
+    emailInput.value = emailView.textContent.trim();
+    passwordInput.value = "";
   });
 
-  // Discard button click handler
   discardBtn.addEventListener("click", () => {
     profileContainer.classList.remove("edit-state");
-    // Restore original values
-    restoreOriginalValues();
+    firstNameInput.value = "";
+    lastNameInput.value = "";
+    emailInput.value = "";
+    passwordInput.value = "";
   });
 
-  // Save button click handler
   saveBtn.addEventListener("click", async () => {
-    try {
-      const updatedData = {
-        firstName: document.getElementById("firstName-input").value,
-        lastName: document.getElementById("lastName-input").value,
-        email: document.getElementById("email-input").value,
-        password: document.getElementById("password-input").value,
-      };
+    const firstName = firstNameInput.value.trim();
+    const lastName = lastNameInput.value.trim();
 
-      // Call API to update user data
-      const response = await fetch("/api/update-profile", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData),
-      });
+    if (!firstName || !lastName) {
+      alert("First name and last name are required");
+      return;
+    }
 
-      if (response.ok) {
-        // Update view mode with new values
-        updateViewMode(updatedData);
-        profileContainer.classList.remove("edit-state");
-        alert("Profile updated successfully!");
-      } else {
-        throw new Error("Failed to update profile");
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
+    const result = await updateUserProfile(firstName, lastName);
+    if (result) {
+      firstNameView.textContent = firstName;
+      lastNameView.textContent = lastName;
+      profileContainer.classList.remove("edit-state");
+      // Update sidebar name using the common function
+      updateSidebarName();
+    } else {
+      alert("Failed to update profile");
     }
   });
 });
 
-// Store current values before editing
-function storeCurrentValues() {
-  const originalValues = {
-    firstName: document.getElementById("firstName-view").textContent,
-    lastName: document.getElementById("lastName-view").textContent,
-    email: document.getElementById("email-view").textContent,
-  };
-  sessionStorage.setItem("originalValues", JSON.stringify(originalValues));
-}
+async function loggingOut() {
+  try {
+    const res = await fetch("http://127.0.0.1:5000/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
 
-// Restore original values when discarding changes
-function restoreOriginalValues() {
-  const originalValues = JSON.parse(sessionStorage.getItem("originalValues"));
-  if (originalValues) {
-    document.getElementById("firstName-input").value = originalValues.firstName;
-    document.getElementById("lastName-input").value = originalValues.lastName;
-    document.getElementById("email-input").value = originalValues.email;
-    document.getElementById("password-input").value = "";
+    if (res.ok) {
+      window.location.href = "/templates/index.html"; //redirects to login screen
+    } else {
+      alert("Logout failed.");
+    }
+  } catch (err) {
+    console.error("Logout error:", err);
   }
 }
 
-// Update view mode with new values
-function updateViewMode(data) {
-  document.getElementById("firstName-view").textContent = data.firstName;
-  document.getElementById("lastName-view").textContent = data.lastName;
-  document.getElementById("email-view").textContent = data.email;
-}
+// Sidebar functionality
+let sidebar = document.querySelector(".sidebar");
+let closeBtn = document.querySelector("#btn");
+let searchBtn = document.querySelector(".bx-search");
 
-// Load user data from API
-async function loadUserData() {
-  try {
-    // For now, use placeholder data
-    const userData = {
-      firstName: "Ryan",
-      lastName: "Nguyen",
-      email: "ryan.nguyen@example.com",
-    };
+closeBtn.addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+  menuBtnChange();
+});
 
-    // Update the view with the placeholder data
-    document.getElementById("firstName-view").textContent = userData.firstName;
-    document.getElementById("lastName-view").textContent = userData.lastName;
-    document.getElementById("email-view").textContent = userData.email;
+searchBtn.addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+  menuBtnChange();
+});
 
-    // Store the data for later use
-    sessionStorage.setItem("userData", JSON.stringify(userData));
-  } catch (error) {
-    console.error("Error loading user data:", error);
-    alert("Failed to load user data. Please try again.");
+function menuBtnChange() {
+  if (sidebar.classList.contains("open")) {
+    closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");
+  } else {
+    closeBtn.classList.replace("bx-menu-alt-right", "bx-menu");
   }
 }

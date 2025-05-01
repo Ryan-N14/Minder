@@ -26,6 +26,7 @@ load_dotenv()
 # Grabbing key and url from .env file
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY") 
+SERVICE_KEY = os.getenv("SERVICE_KEY")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -55,20 +56,31 @@ def signup():
         data = request.json
         email = data.get("email")
         password = data.get("password")  # Ensure field name matches frontend
+        first_name = data.get("firstName")
+        last_name = data.get("lastName")
 
         if not email or not password:
             return jsonify({"error": "Email and password are required"}), 400
 
         response = supabase.auth.sign_up({"email": email, "password": password})
 
+
         if response.user is None:
+            print("Sign-up failure:", response.error.message)
             return jsonify({"error": response.error.message}), 400
 
         user = response.user.id
 
         if user:
-            session["user_id"] = user # grabbing user ID to save
+            session["user_id"] = user # grabbing user ID to save  
+            #inserting to profile table 
+            supabase.table("profiles").insert({
+            "id": user,
+            "first_name": first_name,
+            "last_name": last_name,
+            }).execute()
             return jsonify({'redirect': '/templates/suggestion.html'}), 200
+
         return jsonify({'error': 'Signup failed'}), 400
     except Exception as e:
         print(f"Signup error: {e}")
