@@ -26,6 +26,8 @@ function main() {
 
 async function signup() {
   // Email and password from frontend
+  const firstName = document.getElementById("firstName").value;
+  const lastName = document.getElementById("lastName").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -36,6 +38,8 @@ async function signup() {
     credentials: "include",
     mode: "cors",
     body: JSON.stringify({
+      firstName,
+      lastName,
       email,
       password,
     }),

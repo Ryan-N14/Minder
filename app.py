@@ -6,6 +6,7 @@ import json
 import random
 from rec_system import build_recommender_from_supabase, get_user_preferences
 from supabase import create_client
+import requests
 
 
 app = Flask(__name__)
@@ -15,15 +16,16 @@ app.secret_key = "secretKey"
 # Initialize Supabase Client
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY") 
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+SERVICE_KEY = os.getenv("SERVICE_KEY")
+supabase = create_client(SUPABASE_URL, SERVICE_KEY)
 
 
 
 
-# CORS configuration to allow a single origin
+# CORS configuration to allow multiple origins
 CORS(app, supports_credentials=True, resources={
     r"/*": {
-        "origins": "http://127.0.0.1:5500",
+        "origins": ["http://127.0.0.1:5000", "http://127.0.0.1:5500"],
         "methods": ["GET", "POST", "DELETE", "OPTIONS"],
         "allow_headers": "Content-Type,Authorization",
         "supports_credentials": True
@@ -40,7 +42,9 @@ def log_request():
 @app.after_request
 def after_request(response):
     print("✅ after_request fired")
-    response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5500"
+    origin = request.headers.get('Origin')
+    if origin in ['http://127.0.0.1:5000', 'http://127.0.0.1:5500']:
+        response.headers["Access-Control-Allow-Origin"] = origin
     response.headers["Access-Control-Allow-Credentials"] = "true"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
     response.headers["Access-Control-Allow-Methods"] = "GET,POST,DELETE,OPTIONS"
@@ -51,7 +55,9 @@ def handle_exception(e):
     print("🔥 Global error caught:", e)
     response = jsonify({"error": str(e)})
     response.status_code = 500
-    response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5500"
+    origin = request.headers.get('Origin')
+    if origin in ['http://127.0.0.1:5000', 'http://127.0.0.1:5500']:
+        response.headers["Access-Control-Allow-Origin"] = origin
     response.headers["Access-Control-Allow-Credentials"] = "true"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
     response.headers["Access-Control-Allow-Methods"] = "GET,POST,DELETE,OPTIONS"
@@ -179,7 +185,7 @@ def deleteMovies():
     # Handle CORS preflight request
     if request.method == "OPTIONS":
         response = jsonify({"status": "CORS preflight OK"})
-        response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5500"
+        response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5000"
         response.headers["Access-Control-Allow-Credentials"] = "true"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
         response.headers["Access-Control-Allow-Methods"] = "DELETE,OPTIONS"
@@ -304,6 +310,121 @@ def search_movies():
             "movies": [],
             "error": "An error occurred while searching movies"
         }), 500
+
+
+def get_user_email(user_id):
+    headers = {
+        "apikey": SERVICE_KEY,
+        "Authorization": f"Bearer {SERVICE_KEY}"
+    }
+    url = f"{SUPABASE_URL}/auth/v1/admin/users/{user_id}"
+
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json().get("email")
+    return None
+
+@app.route("/get_profile", methods=["GET", "OPTIONS"])
+def get_profile():
+    if request.method == "OPTIONS":
+        response = jsonify({"status": "CORS preflight OK"})
+        response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5000"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "GET,OPTIONS"
+        return response
+
+    try:
+        user_id = "4dadcc40-5d3b-4d67-8c52-c2c20b43166e"  # Hardcoded for testing
+        print(f"User ID: {user_id}")
+        if not user_id:
+            return jsonify({"error": "Not logged in"}), 401
+
+        # Get profile data
+        print("Fetching profile data from Supabase...")
+        profile_response = supabase.table("profiles").select("*").eq("id", user_id).execute()
+        print(f"Profile response: {profile_response}")
+        
+        profile_data = profile_response.data[0] if profile_response.data else {}
+        print(f"Profile data: {profile_data}")
+
+        # Get email using Admin API
+        print("Fetching user email from Supabase Admin API...")
+        email = get_user_email(user_id)
+        print(f"User email: {email}")
+
+        return jsonify({
+            "first_name": profile_data.get("first_name", ""),
+            "last_name": profile_data.get("last_name", ""),
+            "email": email or ""
+        })
+
+    except Exception as e:
+        print(f"Profile fetch error: {str(e)}")
+        print(f"Error type: {type(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        return jsonify({"error": "An error occurred while fetching profile"}), 500
+
+@app.route("/update_profile", methods=["POST", "OPTIONS"])
+def update_profile():
+    if request.method == "OPTIONS":
+        response = jsonify({"status": "CORS preflight OK"})
+        origin = request.headers.get('Origin')
+        if origin in ['http://127.0.0.1:5000', 'http://127.0.0.1:5500']:
+            response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "POST,OPTIONS"
+        return response
+
+    try:
+        user_id = session.get("user_id")
+        if not user_id:
+            return jsonify({"error": "Not logged in"}), 401
+
+        data = request.get_json()
+        first_name = data.get("firstName")
+        last_name = data.get("lastName")
+        
+        if not first_name or not last_name:
+            return jsonify({"error": "First name and last name are required"}), 400
+
+        # Check if profile exists
+        profile_response = supabase.table("profiles").select("*").eq("id", user_id).execute()
+        
+        if not profile_response.data:
+            # Create new profile
+            print("Creating new profile...")
+            response = supabase.table("profiles").insert({
+                "id": user_id,
+                "first_name": first_name,
+                "last_name": last_name
+            }).execute()
+        else:
+            # Update existing profile
+            print("Updating existing profile...")
+            response = supabase.table("profiles").update({
+                "first_name": first_name,
+                "last_name": last_name
+            }).eq("id", user_id).execute()
+
+        if not response.data:
+            print(f"Profile update/insert failed: {response}")
+            return jsonify({"error": "Failed to update profile"}), 500
+
+        return jsonify({
+            "message": "Profile updated successfully",
+            "first_name": first_name,
+            "last_name": last_name
+        })
+
+    except Exception as e:
+        print(f"Profile update error: {str(e)}")
+        print(f"Error type: {type(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        return jsonify({"error": "An error occurred while updating profile"}), 500
 
 
 app.register_blueprint(auth_bp, url_prefix="/auth")

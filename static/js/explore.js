@@ -161,6 +161,7 @@ saveBtn.addEventListener("click", () => {
   saveMovie();
 });
 
+//navbar
 let sidebar = document.querySelector(".sidebar");
 let closeBtn = document.querySelector("#btn");
 let searchBtn = document.querySelector(".bx-search");
@@ -190,7 +191,7 @@ async function loggingOut() {
     });
 
     if (res.ok) {
-      window.location.href = "/templates/index.html"; //redriects to login screen
+      window.location.href = "/templates/index.html"; //redirects to login screen
     } else {
       alert("Logout failed.");
     }
