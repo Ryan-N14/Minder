@@ -1,6 +1,6 @@
 # Minder
 
-<img src='https://giphy.com/gifs/PgIKAbqJQqZRnxBMnv' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXQ0NDFvaHg4YnBxZnBtaTM5NXpjazFpeWhuNDhidHptdDF3bWJ2biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PgIKAbqJQqZRnxBMnv/giphy.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 
 ## Description
