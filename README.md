@@ -1,6 +1,6 @@
 # Minder
 
-<img src='https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXQ0NDFvaHg4YnBxZnBtaTM5NXpjazFpeWhuNDhidHptdDF3bWJ2biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PgIKAbqJQqZRnxBMnv/giphy.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<div style="width:100%;height:0;padding-bottom:56%;position:relative;"><iframe src="https://giphy.com/embed/PgIKAbqJQqZRnxBMnv" width="100%" height="100%" style="position:absolute" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/PgIKAbqJQqZRnxBMnv">via GIPHY</a></p>
 
 
 ## Description
