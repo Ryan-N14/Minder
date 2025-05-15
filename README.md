@@ -1,6 +1,9 @@
 # Minder
 
-![Demo](https://media.giphy.com/media/M9MZyW7gYNpzU1kdm9/giphy.gif)
+<p align="center">
+  <img src="https://media.giphy.com/media/M9MZyW7gYNpzU1kdm9/giphy.gif" alt="Demo GIF" width="600" />
+</p>
+
 
 
 
